@@ -6,6 +6,7 @@ public class Flag : TriggerTile
 {
     protected override void OnTriggered()
     {
-        GameManager.Instance.LevelCompleted();
+        SoundManager.Instance.Play("Confirm");
+        SceneTransitioner.Instance.FadeToNextScene();
     }
 }

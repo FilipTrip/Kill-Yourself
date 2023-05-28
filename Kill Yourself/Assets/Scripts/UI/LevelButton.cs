@@ -18,7 +18,8 @@ public class LevelButton : MonoBehaviour
 
     public void OnClick()
     {
-        SceneManager.LoadScene("Level " + number);
+        SoundManager.Instance.Play("Confirm");
+        SceneTransitioner.Instance.FadeToScene("Level " + number);
     }
 
 }

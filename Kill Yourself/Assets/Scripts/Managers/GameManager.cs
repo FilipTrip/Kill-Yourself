@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
+using System.Diagnostics;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,28 +11,63 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private float gravity = -1;
     [SerializeField] private TextMeshProUGUI levelText;
+    [SerializeField] private TextMeshProUGUI timerText;
+
+    private static bool speedrun;
+    private static Stopwatch stopwatch;
+
+    public static bool Speedrun => speedrun;
+
+    public static string GetSpeedrunTimerString()
+    {
+        return stopwatch.Elapsed.ToString("mm\\:ss\\.FFF");
+    }
+
+    public static void StartSpeedrun()
+    {
+        speedrun = true;
+        stopwatch = Stopwatch.StartNew();
+    }
+
+    public static void StopSpeedrun()
+    {
+        speedrun = false;
+        stopwatch.Stop();
+    }
 
     private void Awake()
     {
         Instance = this;
         Physics2D.gravity = new Vector2(0f, gravity);
         levelText.text = SceneManager.GetActiveScene().name;
+
+        if (speedrun)
+            timerText.gameObject.SetActive(true);
     }
 
-    public void LevelCompleted()
+    private void Update()
     {
-        int sceneIndex = SceneManager.GetActiveScene().buildIndex;
-
-        if (sceneIndex + 1 == SceneManager.sceneCountInBuildSettings)
+        if (speedrun)
         {
-            // No more levels
-            SceneManager.LoadScene("Menu");
+            timerText.text = GetSpeedrunTimerString();
         }
-        else
+
+        if (Input.GetKeyDown(KeyCode.R))
+            RestartLevel();
+
+        else if (Input.GetKeyDown(KeyCode.Backspace))
         {
-            // Load next level
-            SceneManager.LoadScene(sceneIndex + 1);
+            if (speedrun)
+                StopSpeedrun();
+
+            SceneTransitioner.Instance.FadeToMenuScene();
         }
     }
-    
+
+    public void RestartLevel()
+    {
+        SceneTransitioner.Instance.FadeReloadActiveScene();
+        SoundManager.Instance.Play("Error");
+    }
+
 }

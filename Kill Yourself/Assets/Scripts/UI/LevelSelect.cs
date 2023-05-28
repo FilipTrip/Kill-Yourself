@@ -7,16 +7,13 @@ public class LevelSelect : MonoBehaviour
 {
     [SerializeField] private Transform levelGrid;
     [SerializeField] private GameObject levelButtonPrefab;
-    [SerializeField] private int nonLevelScenes = 1;
+    [SerializeField] private int nonLevelScenes;
 
-    private void Awake()
+    private void Start()
     {
-        foreach (Transform child in levelGrid)
-            Destroy(child.gameObject);
+        int sceneCount = SceneManager.sceneCountInBuildSettings - nonLevelScenes;
 
-        int levels = SceneManager.sceneCountInBuildSettings - nonLevelScenes;
-
-        for (int i = 0; i < levels; ++i)
+        for (int i = 0; i < sceneCount; ++i)
         {
             Instantiate(levelButtonPrefab, levelGrid);
         }

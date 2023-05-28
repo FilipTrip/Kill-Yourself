@@ -15,11 +15,15 @@ public class Player : MonoBehaviour, ITriggeredByExplosion
     [SerializeField] private GameObject keyObject;
     [SerializeField] private SpriteRenderer keySpriteRenderer;
     [SerializeField] private GameObject explosionPrefab;
+    [SerializeField] private GameObject droppedKeyPrefab;
     [SerializeField] private Jump jump;
 
     [Header("Values")]
     [SerializeField] private float movementSpeed;
+    [SerializeField] private float movementAcceleration;
     [SerializeField] private float jumpForce;
+    [SerializeField] private float friction;
+    [SerializeField] private float killY;
 
     [Header("Animation")]
     [SerializeField] private Sprite[] idleSprites;
@@ -32,6 +36,7 @@ public class Player : MonoBehaviour, ITriggeredByExplosion
     private int animationIndex;
 
     private bool hasKey;
+    private float horizontalInput;
 
     public static UnityEvent OnKilled = new UnityEvent();
     public static UnityEvent OnSpawned = new UnityEvent();
@@ -57,8 +62,19 @@ public class Player : MonoBehaviour, ITriggeredByExplosion
 
     private void Update()
     {
-        float horizontalInput = Input.GetAxisRaw("Horizontal");
-        rigidbody.velocity = new Vector2(horizontalInput * movementSpeed, rigidbody.velocity.y);
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Kill();
+            return;
+        }
+
+        else if (transform.position.y < killY)
+        {
+            GameManager.Instance.RestartLevel();
+            return;
+        }
+
+        horizontalInput = Input.GetAxisRaw("Horizontal");
 
         if (jump.CanJump && (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)))
         {
@@ -66,17 +82,22 @@ public class Player : MonoBehaviour, ITriggeredByExplosion
             jump.Cooldown();
         }
 
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            Kill();
-        }
+        Animate();
+    }
 
-        Animate(horizontalInput);
+    private void FixedUpdate()
+    {
+        rigidbody.AddForce(new Vector2(horizontalInput * movementSpeed * Time.fixedDeltaTime * 1000f, rigidbody.velocity.y));
+        rigidbody.velocity *= new Vector2(friction * Time.fixedDeltaTime, 1f);
     }
 
     public void Kill()
     {
         Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+
+        if (hasKey)
+            Instantiate(droppedKeyPrefab, transform.position, Quaternion.Euler(0f, 0f, Random.Range(-20, 20)));
+
         Destroy(gameObject);
         OnKilled.Invoke();
     }
@@ -86,7 +107,7 @@ public class Player : MonoBehaviour, ITriggeredByExplosion
         Kill();
     }
 
-    private void Animate(float horizontalInput)
+    private void Animate()
     {
         bool newAnimation = false;
         Sprite[] previousSprites = activeSprites;
