@@ -9,6 +9,7 @@ public class Explosion : MonoBehaviour
     [SerializeField] private ExplosionStrength strength;
     [SerializeField] private float radius = 1.5f;
     [SerializeField] private float lifeTime = 5f;
+    [SerializeField] private AudioSource audioSource;
 
     public ExplosionStrength Strength => strength;
 
@@ -30,7 +31,8 @@ public class Explosion : MonoBehaviour
                 triggeredByExplosion.OnTriggeredByExplosion(this);
         }
 
-        SoundManager.Instance.Play(strength == ExplosionStrength.Weak ? "Explosion Small" : "Explosion Large");
+        audioSource.pitch *= Random.Range(0.8f, 1.2f);
+        audioSource.Play();
         Destroy(gameObject, lifeTime);
     }
 

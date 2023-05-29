@@ -9,6 +9,7 @@ public class SceneTransitioner : MonoBehaviour
 
     [SerializeField] private Animator animator;
     [SerializeField] private float fadeDuration;
+    [SerializeField] private float loadSceneDelay;
 
     private void Awake()
     {
@@ -18,40 +19,44 @@ public class SceneTransitioner : MonoBehaviour
     public void FadeToScene(string sceneName)
     {
         animator.SetTrigger("FadeToBlack");
-        DelayedCall.Create(this, () => SceneManager.LoadScene(sceneName), fadeDuration);
+        DelayedCall.Create(this, () => SceneManager.LoadScene(sceneName), fadeDuration + loadSceneDelay);
     }
 
-    public void FadeToNextScene()
+    public void FadeToNextLevel()
     {
         animator.SetTrigger("FadeToBlack");
-        DelayedCall.Create(this, NextScene, fadeDuration);
+        DelayedCall.Create(this, NextLevel, fadeDuration + loadSceneDelay);
     }
 
     public void FadeToMenuScene()
     {
         animator.SetTrigger("FadeToBlack");
-        DelayedCall.Create(this, LoadMenuScene, fadeDuration);
+        DelayedCall.Create(this, LoadMenuScene, fadeDuration + loadSceneDelay);
     }
 
     public void FadeReloadActiveScene()
     {
         animator.SetTrigger("FadeToBlack");
-        DelayedCall.Create(this, ReloadActiveScene, fadeDuration);
+        DelayedCall.Create(this, ReloadActiveScene, fadeDuration + loadSceneDelay);
     }
 
-    public void NextScene()
+    public void FadeExitGame()
     {
-        int sceneIndex = SceneManager.GetActiveScene().buildIndex;
+        animator.SetTrigger("FadeToBlack");
+        DelayedCall.Create(this, Exit.ExitApplication, fadeDuration + loadSceneDelay);
+    }
 
-        if (sceneIndex + 1 == SceneManager.sceneCountInBuildSettings)
+    public void NextLevel()
+    {
+        int level = int.Parse(SceneManager.GetActiveScene().name.Replace("Level ", ""));
+
+        if (level == LevelSelect.LevelCount)
         {
-            // No more levels
-            SceneManager.LoadScene("Menu");
+            SceneManager.LoadScene("End");
         }
         else
         {
-            // Load next level
-            SceneManager.LoadScene(sceneIndex + 1);
+            SceneManager.LoadScene("Level " + (level + 1).ToString());
         }
     }
 

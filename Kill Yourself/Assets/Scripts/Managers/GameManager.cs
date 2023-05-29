@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
 using System.Diagnostics;
+using System;
 
 public class GameManager : MonoBehaviour
 {
@@ -21,6 +22,11 @@ public class GameManager : MonoBehaviour
     public static string GetSpeedrunTimerString()
     {
         return stopwatch.Elapsed.ToString("mm\\:ss\\.FFF");
+    }
+
+    public static TimeSpan GetSpeedrunTime()
+    {
+        return stopwatch.Elapsed;
     }
 
     public static void StartSpeedrun()
@@ -52,10 +58,10 @@ public class GameManager : MonoBehaviour
             timerText.text = GetSpeedrunTimerString();
         }
 
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.G))
             RestartLevel();
 
-        else if (Input.GetKeyDown(KeyCode.Backspace))
+        else if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Alpha0))
         {
             if (speedrun)
                 StopSpeedrun();
