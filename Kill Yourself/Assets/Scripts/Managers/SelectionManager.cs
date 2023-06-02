@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -7,11 +5,11 @@ using UnityEngine.UI;
 public class SelectionManager : MonoBehaviour
 {
     [SerializeField] private EventSystem eventSystem;
-    [SerializeField] private KeyCode[] up;
-    [SerializeField] private KeyCode[] down;
-    [SerializeField] private KeyCode[] left;
-    [SerializeField] private KeyCode[] right;
-    [SerializeField] private KeyCode[] select;
+    [SerializeField] private KeyCode[] up = { KeyCode.W, KeyCode.UpArrow };
+    [SerializeField] private KeyCode[] down = { KeyCode.S, KeyCode.DownArrow };
+    [SerializeField] private KeyCode[] left = { KeyCode.A, KeyCode.LeftArrow };
+    [SerializeField] private KeyCode[] right = { KeyCode.D, KeyCode.RightArrow };
+    [SerializeField] private KeyCode[] select = { KeyCode.M };
 
     private Selectable nextSelectable;
     private Button button;
@@ -60,3 +58,5 @@ public class SelectionManager : MonoBehaviour
         return false;
     }
 }
+
+
